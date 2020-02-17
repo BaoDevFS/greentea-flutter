@@ -102,7 +102,9 @@ class _LoginPageState extends State<LoginPage> {
           gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
-              colors: [Color(0xfffbb448), Color(0xfff7892b)])),
+              colors: [Colors.green, Colors.green]
+          )
+      ),
       child: Text(
         'Login',
         style: TextStyle(fontSize: 20, color: Colors.white),
@@ -309,7 +311,7 @@ class _LoginPageState extends State<LoginPage> {
                   alignment: Alignment.bottomCenter,
                   child: _createAccountLabel(),
                 ),
-                Positioned(top: 40, left: 0, child: _backButton()),
+//                Positioned(top: 40, left: 0, child: _backButton()),
 //                Positioned(
 //                    top: -MediaQuery.of(context).size.height * .15,
 //                    right: -MediaQuery.of(context).size.width * .4,
