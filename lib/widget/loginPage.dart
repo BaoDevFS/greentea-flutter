@@ -20,18 +20,36 @@ class _LoginPageState extends State<LoginPage> {
   String email,password;
   String token;
   User user;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final snackBar = SnackBar(content: CircularProgressIndicator());
+
   gettoken () async{
     final url='http://youth.gtnlu.site/api/login?idNlu=$email&password=$password';
     final response =await http.get(url,headers: {HttpHeaders.contentTypeHeader:'application/json'});
 //    final client = http.Client();
-    if(response.statusCode==200) {
-      token=json.decode(response.body)['token'];
-      print(response.statusCode);
-      user=User.fromjson(json.decode(response.body)['user']);
-      saveStatusLogin();
-      Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context)=> MyHomePage()
-      ));
+    if(response.body!="") {
+      if (json.decode(response.body)['status'] == 200) {
+        print(response.statusCode);
+        token = json.decode(response.body)['token'];
+        print(response.statusCode);
+        user = User.fromjson(json.decode(response.body)['user']);
+        saveStatusLogin();
+        Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) => MyHomePage(title: "HomePage",)
+        ));
+      } else {
+        _scaffoldKey.currentState.removeCurrentSnackBar();
+        print("!=200");
+        //forcus username bao loi
+        email = " ";
+        _formKey.currentState.validate();
+      }
+    }else{
+      _scaffoldKey.currentState.removeCurrentSnackBar();
+      print("null");
+      //forcus username bao loi
+      email = " ";
+      _formKey.currentState.validate();
     }
   }
 // luu trang thai sau khi request thanh cong
@@ -41,6 +59,11 @@ class _LoginPageState extends State<LoginPage> {
       sharepreferent.setString(Define.KEY_TOKEN, token);
       sharepreferent.setBool(Define.KEY_STATUSLOGIN, true);
       sharepreferent.setString(Define.KEY_USER, user.toString());
+    }else{
+      //forcus username thong bao error
+      return Scaffold
+          .of(context)
+          .showSnackBar(SnackBar(content: Text('Somthing went wrong! Contact admin to fix')));
     }
   }
   Widget _backButton() {
@@ -63,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
+  final _formKey= GlobalKey<FormState>();
   Widget _entryField(String title, {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -77,9 +100,18 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(
             height: 10,
           ),
-          TextField(
+          TextFormField(
               controller: isPassword?passwordControler:emailController,
               obscureText: isPassword,
+              validator: (value){
+                if(value.isEmpty){
+                  return "Username or password is empty";
+                }else if(value!=email){
+                  return "Username or password incorect";
+                }
+                print(value+"-"+email);
+                return null;
+              },
               decoration: InputDecoration(
                   border: InputBorder.none,
                   fillColor: Color(0xfff3f3f4),
@@ -253,18 +285,21 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _emailPasswordWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("UserName"),
-        _entryField("Password", isPassword: true),
-      ],
+  Widget  _emailPasswordWidget() {
+    return Form(
+      key: _formKey,
+      child:Column(
+        children: <Widget>[
+          _entryField("UserName"),
+          _entryField("Password", isPassword: true),
+        ],
+      ) ,
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: SingleChildScrollView(
         child: Container(
             height: MediaQuery.of(context).size.height,
@@ -291,8 +326,12 @@ class _LoginPageState extends State<LoginPage> {
                       InkWell(
                         child:  _submitButton(),
                         onTap: (){
+                          _scaffoldKey.currentState.showSnackBar(snackBar);
                           print("email:"+(email=emailController.text)+"-password:"+(password=passwordControler.text));
-                          gettoken();
+                          if(!_formKey.currentState.validate()){
+                            gettoken();
+                            print("gettoken");
+                          }
                         },
                       )
                      ,
