@@ -28,7 +28,7 @@ class _RowterState extends State<Router>{
       ));
     }else{
       Navigator.pushReplacement(context, MaterialPageRoute(
-        builder:(context)=> MyHomePage(),
+        builder:(context)=> MyHomePage(title: "HomePage"),
       ));
     }
   }

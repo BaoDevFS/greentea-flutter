@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:greentea/widget/homePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../define.dart';
 import '../model/user.dart';
@@ -19,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   String email,password;
   String token;
   User user;
-  gettoken ()async{
+  gettoken () async{
     final url='http://youth.gtnlu.site/api/login?idNlu=$email&password=$password';
     final response =await http.get(url,headers: {HttpHeaders.contentTypeHeader:'application/json'});
 //    final client = http.Client();
@@ -28,6 +29,9 @@ class _LoginPageState extends State<LoginPage> {
       print(response.statusCode);
       user=User.fromjson(json.decode(response.body)['user']);
       saveStatusLogin();
+      Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context)=> MyHomePage()
+      ));
     }
   }
 // luu trang thai sau khi request thanh cong
