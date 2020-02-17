@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:greentea/widget/Router.dart';
 import 'widget/homePage.dart';
 void main() => runApp(MyApp());
 
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Home Page'),
+      home: Router(),
     );
   }
 }

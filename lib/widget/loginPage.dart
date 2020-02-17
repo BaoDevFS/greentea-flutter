@@ -1,16 +1,44 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../define.dart';
+import '../model/user.dart';
 import  'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:http/http.dart' as http;
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
-
   final String title;
-
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = new TextEditingController();
+  TextEditingController passwordControler= new TextEditingController();
+  String email,password;
+  String token;
+  User user;
+  gettoken ()async{
+    final url='http://youth.gtnlu.site/api/login?idNlu=$email&password=$password';
+    final response =await http.get(url,headers: {HttpHeaders.contentTypeHeader:'application/json'});
+//    final client = http.Client();
+    if(response.statusCode==200) {
+      token=json.decode(response.body)['token'];
+      print(response.statusCode);
+      user=User.fromjson(json.decode(response.body)['user']);
+      saveStatusLogin();
+    }
+  }
+// luu trang thai sau khi request thanh cong
+  saveStatusLogin()async{
+    if(token!=null&&user!=null){
+      final sharepreferent= await SharedPreferences.getInstance();
+      sharepreferent.setString(Define.KEY_TOKEN, token);
+      sharepreferent.setBool(Define.KEY_STATUSLOGIN, true);
+      sharepreferent.setString(Define.KEY_USER, user.toString());
+    }
+  }
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -46,6 +74,7 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextField(
+              controller: isPassword?passwordControler:emailController,
               obscureText: isPassword,
               decoration: InputDecoration(
                   border: InputBorder.none,
@@ -198,21 +227,21 @@ class _LoginPageState extends State<LoginPage> {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-          text: 'd',
+          text: 'G',
           style: GoogleFonts.portLligatSans(
             textStyle: Theme.of(context).textTheme.display1,
             fontSize: 30,
             fontWeight: FontWeight.w700,
-            color: Color(0xffe46b10),
+            color: Colors.green,
           ),
           children: [
             TextSpan(
-              text: 'ev',
+              text: 'ree',
               style: TextStyle(color: Colors.black, fontSize: 30),
             ),
             TextSpan(
-              text: 'rnz',
-              style: TextStyle(color: Color(0xffe46b10), fontSize: 30),
+              text: 'ntea',
+              style: TextStyle(color: Colors.green, fontSize: 30),
             ),
           ]),
     );
@@ -221,7 +250,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _emailPasswordWidget() {
     return Column(
       children: <Widget>[
-        _entryField("Email id"),
+        _entryField("UserName"),
         _entryField("Password", isPassword: true),
       ],
     );
@@ -253,7 +282,14 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: 20,
                       ),
-                      _submitButton(),
+                      InkWell(
+                        child:  _submitButton(),
+                        onTap: (){
+                          print("email:"+(email=emailController.text)+"-password:"+(password=passwordControler.text));
+                          gettoken();
+                        },
+                      )
+                     ,
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         alignment: Alignment.centerRight,

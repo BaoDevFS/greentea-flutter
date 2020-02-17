@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'loginPage.dart';
+import '../define.dart';
 import 'select_unit.dart';
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -20,7 +23,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  String token;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
               splashColor: Colors.blueAccent,
               onPressed: (){
                 Navigator.push(context,MaterialPageRoute(
-                  builder: (context)=>SlectUnits(),
+                  builder: (context)=>LoginPage(),
                 ));
               },
             ),
@@ -80,4 +83,5 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
 }
