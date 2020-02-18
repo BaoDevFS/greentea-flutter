@@ -23,7 +23,31 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String token;
+  String token="";
+  getTokenFromSharePrefer()async{
+    final sharePreferent= await SharedPreferences.getInstance();
+    token=sharePreferent.getString(Define.KEY_TOKEN??"");
+    if(token==""){
+      sharePreferent.setBool(Define.KEY_STATUSLOGIN, false);
+      Navigator.pushReplacement(context, MaterialPageRoute(
+        builder: (context)=> LoginPage(),
+      ));
+    }
+  }
+  logout()async{
+    final sharePreferent= await SharedPreferences.getInstance();
+    sharePreferent.setBool(Define.KEY_STATUSLOGIN, false);
+    sharePreferent.remove(Define.KEY_TOKEN);
+    // ve man hinh login khog quay tro lai dc
+    Navigator.pushReplacement(context, MaterialPageRoute(
+        builder: (context)=> LoginPage(),
+    ));
+  }
+
+  @override
+  void initState() {
+    getTokenFromSharePrefer();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +79,11 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(8.0),
               splashColor: Colors.blueAccent,
               onPressed: (){
-                Navigator.push(context,MaterialPageRoute(
-                  builder: (context)=>LoginPage(),
-                ));
+                if(token!="") {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => SlectUnits(token: token,type: Define.TYPESCAN_CHECKIN,),
+                  ));
+                }
               },
             ),
             FlatButton(
@@ -66,6 +92,13 @@ class _MyHomePageState extends State<MyHomePage> {
               textColor: Colors.white,
               disabledColor: Colors.blue,
               padding: EdgeInsets.all(8.0),
+              onPressed: (){
+                if(token!="") {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => SlectUnits(token: token,type: Define.TYPESCAN_CHECKOUT,),
+                  ));
+                }
+              },
             ),
             FlatButton(
               child: Text("Attendance"),
@@ -73,6 +106,13 @@ class _MyHomePageState extends State<MyHomePage> {
               textColor: Colors.white,
               disabledColor: Colors.blue,
               padding: EdgeInsets.all(8.0),
+              onPressed: (){
+                if(token!="") {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => SlectUnits(token: token,type: Define.TYPESCAN_CHECKMANUAL,),
+                  ));
+                }
+              },
             ),
           ],
         ),
@@ -80,6 +120,9 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         tooltip: 'Increment',
         child: Icon(Icons.add),
+        onPressed: (){
+          logout();
+        },
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

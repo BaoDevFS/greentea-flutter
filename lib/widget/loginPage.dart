@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   String token;
   User user;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final snackBar = SnackBar(content: CircularProgressIndicator());
+  final snackBar = SnackBar(content: Center(child: CircularProgressIndicator()) );
 
   gettoken () async{
     final url='http://youth.gtnlu.site/api/login?idNlu=$email&password=$password';
