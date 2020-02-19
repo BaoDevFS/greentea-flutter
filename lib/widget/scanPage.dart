@@ -38,7 +38,6 @@ class _ScanCodeState extends State<ScanCode> {
   @override
   void initState() {
     print("this is Initstate");
-    _scan();
   }
 
   Future _scan() async {
@@ -139,7 +138,7 @@ class _ScanCodeState extends State<ScanCode> {
     if (response.statusCode == 200) {
       final body = json.decode(response.body);
       if (body['status'] == 200) {
-        user = User.fromJson(body['user']);
+        user = User(iddep: body['user']['idp'],idNlu: body['user']['idNlu'],);
         mesage = body['mes'];
         print("mesage:"+mesage);
         changePage('checkinManual', true);
@@ -159,7 +158,7 @@ class _ScanCodeState extends State<ScanCode> {
   Widget build(BuildContext context) {
     // TODO: implement build
     print("this is biuld");
-
+    _scan();
     return Center(
       child: CircularProgressIndicator(),
     );

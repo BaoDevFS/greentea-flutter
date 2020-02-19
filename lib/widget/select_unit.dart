@@ -31,28 +31,26 @@ class SlectUnitsState extends State<SlectUnits> {
 
   getUnits(int type) async {
     //type 3 la diem danh bang tay !=3 la diem danh bang scan
+    http.Response response;
     if (type == 3) {
-      final response = await http.get(urlType3,
+       response = await http.get(urlType3,
           headers: {HttpHeaders.authorizationHeader: "Bearer $token"});
+    } else {
+       response = await http.get(urlType1_2,
+          headers: {HttpHeaders.authorizationHeader: "Bearer $token"});
+    }
+    if (json.decode(response.body).toString().endsWith("]")) {
       List<dynamic> list = json.decode(response.body);
-      units = list.toList();
+      // cap nhat lai data cho dropdown
+      setState(() {
+        units = list.map((i) => Unit.fromJson(i)).toList();
+      });
       print("@GREN${units.length}");
     } else {
-      final response = await http.get(urlType1_2,
-          headers: {HttpHeaders.authorizationHeader: "Bearer $token"});
-      if (json.decode(response.body).toString().endsWith("]")) {
-        List<dynamic> list = json.decode(response.body);
-        // cap nhat lai data cho dropdown
-        setState(() {
-          units = list.map((i) => Unit.fromJson(i)).toList();
-        });
-        print("@GREN${units.length}");
-      } else {
-        // khong du quyen show snackbar
-        print("@GREEN:${response.body}");
-        units.add(new Unit());
-        _globalKey.currentState.showSnackBar(SnackBar(content:Text("YOU NOT HAVE PERMISSION")));
-      }
+      // khong du quyen show snackbar
+      print("@GREEN:${response.body}");
+      units.add(new Unit());
+      _globalKey.currentState.showSnackBar(SnackBar(content:Text("YOU NOT HAVE PERMISSION")));
     }
   }
 
@@ -60,12 +58,13 @@ class SlectUnitsState extends State<SlectUnits> {
   void initState() {
     // TODO: implement initState
     getUnits(type);
-
+    print("initState");
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    print("this is build");
     return Scaffold(
       key: _globalKey,
       appBar: AppBar(
