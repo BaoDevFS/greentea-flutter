@@ -19,7 +19,7 @@ class User{
     return '{id: $id, idNlu: $idNlu, name: $name, iddep: $iddep, classroom: $classroom, job: $job, gender: $gender, phone: $phone, group: $group, dep: $dep}';
   }
 
-  factory User.fromjson(Map<String,dynamic> json){
+  factory User.fromJson(Map<String,dynamic> json){
     return User(
       id: json['id'],
       idNlu: json['idNlu'],

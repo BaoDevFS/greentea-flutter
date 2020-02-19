@@ -18,8 +18,8 @@ class SlectUnits extends StatefulWidget {
 
 class SlectUnitsState extends State<SlectUnits> {
   Unit line;
-  String token;
-  int type;
+  final String token;
+  final int type;
   GlobalKey<ScaffoldState> _globalKey = new GlobalKey();
   // chua danh sach cac unit lay tu server
   List<Unit>  units= new List();
@@ -60,6 +60,7 @@ class SlectUnitsState extends State<SlectUnits> {
   void initState() {
     // TODO: implement initState
     getUnits(type);
+
   }
 
   @override
@@ -84,7 +85,7 @@ class SlectUnitsState extends State<SlectUnits> {
             setState(() {
               line = value;
               Navigator.push(context, MaterialPageRoute(
-                  builder: (context)=>ScanCode(type: type,)
+                  builder: (context)=>ScanCode(type: type,unit: line,token: token,)
               ));
             });
           },
@@ -93,7 +94,6 @@ class SlectUnitsState extends State<SlectUnits> {
                 value: value,
                 child: Text(value.name, style: TextStyle(color: Colors.black)));
           }).toList() ,
-
           value: line,
         ),
       ),

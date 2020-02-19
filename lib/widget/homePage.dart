@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(8.0),
               splashColor: Colors.blueAccent,
               onPressed: (){
-                if(token!="") {
+                if(token!=""||token=='null') {
                   Navigator.push(context, MaterialPageRoute(
                     builder: (context) => SlectUnits(token: token,type: Define.TYPESCAN_CHECKIN,),
                   ));

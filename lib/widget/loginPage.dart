@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
         print(response.statusCode);
         token = json.decode(response.body)['token'];
         print(response.statusCode);
-        user = User.fromjson(json.decode(response.body)['user']);
+        user = User.fromJson(json.decode(response.body)['user']);
         saveStatusLogin();
         Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) => MyHomePage(title: "HomePage",)
@@ -54,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 // luu trang thai sau khi request thanh cong
   saveStatusLogin()async{
+    print("SAVE");
     if(token!=null&&user!=null){
       final sharepreferent= await SharedPreferences.getInstance();
       sharepreferent.setString(Define.KEY_TOKEN, token);
