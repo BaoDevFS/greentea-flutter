@@ -24,9 +24,10 @@ class _LoginPageState extends State<LoginPage> {
   final snackBar = SnackBar(content: Center(child: CircularProgressIndicator()) );
 
   gettoken () async{
-    final url='http://youth.gtnlu.site/api/login?idNlu=$email&password=$password';
+//    final url='http://youth.gtnlu.site/api/login?idNlu=$email&password=$password';
+    var url= Uri.http('youth.gtnlu.site', '/api/login',{'idNlu':'$email','password':'$password'});
     final response =await http.get(url,headers: {HttpHeaders.contentTypeHeader:'application/json'});
-//    final client = http.Client();
+
     if(response.body!="") {
       if (json.decode(response.body)['status'] == 200) {
         print(response.statusCode);
@@ -39,14 +40,12 @@ class _LoginPageState extends State<LoginPage> {
         ));
       } else {
         _scaffoldKey.currentState.removeCurrentSnackBar();
-        print("!=200");
         //forcus username bao loi
         email = " ";
         _formKey.currentState.validate();
       }
     }else{
       _scaffoldKey.currentState.removeCurrentSnackBar();
-      print("null");
       //forcus username bao loi
       email = " ";
       _formKey.currentState.validate();
@@ -54,12 +53,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 // luu trang thai sau khi request thanh cong
   saveStatusLogin()async{
-    print("SAVE");
     if(token!=null&&user!=null){
       final sharepreferent= await SharedPreferences.getInstance();
       sharepreferent.setString(Define.KEY_TOKEN, token);
       sharepreferent.setBool(Define.KEY_STATUSLOGIN, true);
-      sharepreferent.setString(Define.KEY_USER, user.toString());
+      sharepreferent.setString(Define.KEY_USER, jsonEncode(user));
     }else{
       //forcus username thong bao error
       return Scaffold
@@ -110,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
                 }else if(value!=email){
                   return "Username or password incorect";
                 }
-                print(value+"-"+email);
                 return null;
               },
               decoration: InputDecoration(
@@ -327,9 +324,9 @@ class _LoginPageState extends State<LoginPage> {
                       InkWell(
                         child:  _submitButton(),
                         onTap: (){
-                          _scaffoldKey.currentState.showSnackBar(snackBar);
                           print("email:"+(email=emailController.text)+"-password:"+(password=passwordControler.text));
                           if(!_formKey.currentState.validate()){
+                            _scaffoldKey.currentState.showSnackBar(snackBar);
                             gettoken();
                             print("gettoken");
                           }

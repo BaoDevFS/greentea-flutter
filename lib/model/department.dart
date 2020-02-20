@@ -8,6 +8,11 @@ class Department{
   }
 
   Department({this.name, this.code});
+  Map<String, dynamic> toJson() =>
+      {
+        'name': name,
+        'code': code,
+      };
   factory Department.fromJson(Map<String,dynamic> json){
     return  Department(
       name: json['name'],
