@@ -3,7 +3,7 @@ class User{
   final int id;
   final String idNlu;
   final String name;
-  final int iddep;
+  final int iddep;  // id department
   final String classroom;
   final String job;
   final String gender;
