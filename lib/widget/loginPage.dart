@@ -4,9 +4,10 @@ import 'package:greentea/widget/homePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../define.dart';
 import '../model/user.dart';
-import  'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
   final String title;
@@ -16,55 +17,62 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordControler= new TextEditingController();
-  String email,password;
+  TextEditingController passwordControler = new TextEditingController();
+  String email, password;
   String token;
   User user;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final snackBar = SnackBar(content: Center(child: CircularProgressIndicator()) );
+  final snackBar =
+      SnackBar(content: Center(child: CircularProgressIndicator()));
 
-  gettoken () async{
+  gettoken() async {
 //    final url='http://youth.gtnlu.site/api/login?idNlu=$email&password=$password';
-    var url= Uri.http('youth.gtnlu.site', '/api/login',{'idNlu':'$email','password':'$password'});
-    final response =await http.get(url,headers: {HttpHeaders.contentTypeHeader:'application/json'});
+    var url = Uri.http('youth.gtnlu.site', '/api/login',
+        {'idNlu': '$email', 'password': '$password'});
+    final response = await http
+        .get(url, headers: {HttpHeaders.contentTypeHeader: 'application/json'});
 
-    if(response.body!="") {
+    if (response.body != "") {
       if (json.decode(response.body)['status'] == 200) {
         print(response.statusCode);
         token = json.decode(response.body)['token'];
         print(response.statusCode);
         user = User.fromJson(json.decode(response.body)['user']);
         saveStatusLogin();
-        Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) => MyHomePage(title: "HomePage",)
-        ));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyHomePage(
+                      title: "HomePage",
+                    )));
       } else {
         _scaffoldKey.currentState.removeCurrentSnackBar();
         //forcus username bao loi
         email = " ";
         _formKey.currentState.validate();
       }
-    }else{
+    } else {
       _scaffoldKey.currentState.removeCurrentSnackBar();
       //forcus username bao loi
       email = " ";
       _formKey.currentState.validate();
     }
   }
+
 // luu trang thai sau khi request thanh cong
-  saveStatusLogin()async{
-    if(token!=null&&user!=null){
-      final sharepreferent= await SharedPreferences.getInstance();
+  saveStatusLogin() async {
+    if (token != null && user != null) {
+      final sharepreferent = await SharedPreferences.getInstance();
       sharepreferent.setString(Define.KEY_TOKEN, token);
       sharepreferent.setBool(Define.KEY_STATUSLOGIN, true);
       sharepreferent.setString(Define.KEY_USER, jsonEncode(user));
-    }else{
+    } else {
       //forcus username thong bao error
-      return Scaffold
-          .of(context)
-          .showSnackBar(SnackBar(content: Text('Somthing went wrong! Contact admin to fix')));
+      return Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text('Somthing went wrong! Contact admin to fix')));
     }
   }
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -85,7 +93,8 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  final _formKey= GlobalKey<FormState>();
+
+  final _formKey = GlobalKey<FormState>();
   Widget _entryField(String title, {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -100,12 +109,12 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextFormField(
-              controller: isPassword?passwordControler:emailController,
+              controller: isPassword ? passwordControler : emailController,
               obscureText: isPassword,
-              validator: (value){
-                if(value.isEmpty){
+              validator: (value) {
+                if (value.isEmpty) {
                   return "Username or password is empty";
-                }else if(value!=email){
+                } else if (value != email) {
                   return "Username or password incorect";
                 }
                 return null;
@@ -136,9 +145,7 @@ class _LoginPageState extends State<LoginPage> {
           gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
-              colors: [Colors.green, Colors.green]
-          )
-      ),
+              colors: [Colors.green, Colors.green])),
       child: Text(
         'Login',
         style: TextStyle(fontSize: 20, color: Colors.white),
@@ -283,84 +290,85 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget  _emailPasswordWidget() {
+  Widget _emailPasswordWidget() {
     return Form(
       key: _formKey,
-      child:Column(
+      child: Column(
         children: <Widget>[
           _entryField("UserName"),
           _entryField("Password", isPassword: true),
         ],
-      ) ,
+      ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      body: SingleChildScrollView(
-        child: Container(
-            height: MediaQuery.of(context).size.height,
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 3,
-                        child: SizedBox(),
-                      ),
-                      _title(),
-                      SizedBox(
-                        height: 50,
-                      ),
-                      _emailPasswordWidget(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      InkWell(
-                        child:  _submitButton(),
-                        onTap: (){
-                          print("email:"+(email=emailController.text)+"-password:"+(password=passwordControler.text));
-                          if(!_formKey.currentState.validate()){
-                            _scaffoldKey.currentState.showSnackBar(snackBar);
-                            gettoken();
-                            print("gettoken");
-                          }
-                        },
-                      )
-                     ,
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        alignment: Alignment.centerRight,
-                        child: Text('Forgot Password ?',
-                            style:
-                                TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                      ),
-                      _divider(),
-                      Expanded(
-                        flex: 2,
-                        child: SizedBox(),
-                      ),
-                    ],
-                  ),
+        key: _scaffoldKey,
+        body: SingleChildScrollView(
+            child: Container(
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: SizedBox(),
+                    ),
+                    _title(),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    _emailPasswordWidget(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    InkWell(
+                      child: _submitButton(),
+                      onTap: () {
+                        print("email:" +
+                            (email = emailController.text) +
+                            "-password:" +
+                            (password = passwordControler.text));
+                        if (!_formKey.currentState.validate()) {
+                          _scaffoldKey.currentState.showSnackBar(snackBar);
+                          gettoken();
+                          print("gettoken");
+                        }
+                      },
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      alignment: Alignment.centerRight,
+                      child: Text('Forgot Password ?',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500)),
+                    ),
+                    _divider(),
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(),
+                    ),
+                  ],
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _createAccountLabel(),
-                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _createAccountLabel(),
+              ),
 //                Positioned(top: 40, left: 0, child: _backButton()),
 //                Positioned(
 //                    top: -MediaQuery.of(context).size.height * .15,
 //                    right: -MediaQuery.of(context).size.width * .4,
 //                    child: BezierContainer())
-              ],
-            ),
-          )
-        )
-      );
+            ],
+          ),
+        )));
   }
 }
