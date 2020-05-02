@@ -45,10 +45,8 @@ class SlectUnitsState extends State<SlectUnits> {
       setState(() {
         units = list.map((i) => Unit.fromJson(i)).toList();
       });
-      print("@GREN${units.length}");
     } else {
       // khong du quyen show snackbar
-      print("@GREEN:${response.body}");
       units.add(new Unit());
       _globalKey.currentState.showSnackBar(SnackBar(content:Text("YOU NOT HAVE PERMISSION")));
     }
@@ -58,42 +56,42 @@ class SlectUnitsState extends State<SlectUnits> {
   void initState() {
     // TODO: implement initState
     getUnits(type);
-    print("initState");
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    print("this is build");
     return Scaffold(
       key: _globalKey,
       appBar: AppBar(
         title: Text("Units"),
       ),
       body: Center(
-        child: DropdownButton<Unit>(
-          icon: Icon(Icons.arrow_drop_down),
-          iconSize: 24,
-          hint: Text("Select units"),
-          style: TextStyle(color: Colors.red),
-          underline: Container(
-            height: 2,
-            color: Colors.deepPurple,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Colors.black12
           ),
-          onChanged: (Unit value) {
-            setState(() {
-              line = value;
-              Navigator.push(context, MaterialPageRoute(
-                  builder: (context)=>ScanCode(type: type,unit: line,token: token,)
-              ));
-            });
-          },
-          items: units.map<DropdownMenuItem<Unit>>((Unit value) {
-            return DropdownMenuItem<Unit>(
-                value: value,
-                child: Text(value.name, style: TextStyle(color: Colors.black)));
-          }).toList() ,
-          value: line,
+          child: DropdownButton<Unit>(
+            icon: Icon(Icons.arrow_drop_down),
+            iconSize: 24,
+            hint: Text("Select units"),
+            style: TextStyle(color: Colors.red),
+            onChanged: (Unit value) {
+              setState(() {
+                line = value;
+                Navigator.push(context, MaterialPageRoute(
+                    builder: (context)=>ScanCode(type: type,unit: line,token: token,)
+                ));
+              });
+            },
+            items: units.map<DropdownMenuItem<Unit>>((Unit value) {
+              return DropdownMenuItem<Unit>(
+                  value: value,
+                  child: Text(value.name, style: TextStyle(color: Colors.black)));
+            }).toList() ,
+            value: line,
+          ),
         ),
       ),
     );
