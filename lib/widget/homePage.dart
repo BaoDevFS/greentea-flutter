@@ -124,7 +124,7 @@ class   _MyHomePageState extends State<MyHomePage> {
               },
             ),
             FlatButton(
-              child: Text("Attendance"),
+              child: Text("Điểm danh"),
               color: Colors.blue,
               textColor: Colors.white,
               disabledColor: Colors.blue,

@@ -7,6 +7,8 @@ import 'package:greentea/model/delegate.dart';
 import 'package:greentea/model/units.dart';
 import 'package:greentea/model/user.dart';
 import 'package:greentea/widget/delegateCard.dart';
+import 'package:greentea/widget/failPage.dart';
+import 'package:greentea/widget/successPage.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:http/http.dart' as http;
 
@@ -51,9 +53,17 @@ class _ScanCodeState extends State<ScanCode> with WidgetsBindingObserver {
     // is checkingmanual
     if (type == 'checkinManual') {
       if (_bool) {
-        print("ckecinManutrue");
+        navigationResult = await Navigator.push(
+            context,
+            new MaterialPageRoute(
+                builder: (context) =>
+                    SuccessPage(mess: mesage,user: user,)));
       } else {
-        print("ckecinManualFALSE");
+        navigationResult = await Navigator.push(
+            context,
+            new MaterialPageRoute(
+                builder: (context) =>
+                    FailPage(mess: mesage)));
       }
       return;
     }
@@ -63,11 +73,9 @@ class _ScanCodeState extends State<ScanCode> with WidgetsBindingObserver {
           new MaterialPageRoute(
               builder: (context) =>
                   DelegateCard(mess: mesage, instance: delegate)));
-      print("ckecintrue");
     } else {
 //      navigationResult= await Navigator.push(
 //          context, new MaterialPageRoute(builder: (context) => ));
-      print("ckecinFALSE");
     }
   }
 
@@ -168,6 +176,8 @@ class _ScanCodeState extends State<ScanCode> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     // đc back từ màn hình thành công về thì quét tiếp
     //dang load data tu server
+    print(barcode);
+    print(navigationResult);
     if(barcode ==  null&&navigationResult == " "){
       return Center(
         child: CircularProgressIndicator(),
